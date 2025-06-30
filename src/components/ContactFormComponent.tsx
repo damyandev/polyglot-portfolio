@@ -1,69 +1,107 @@
-// src/components/ContactFormComponent.tsx
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { Mail, Linkedin, Github, Send } from 'lucide-react';
 
-export default function ContactFormComponent() {
-  const [formState, setFormState] = useState({ name: '', email: '', message: '' });
+export function ContactFormComponent() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [formStatus, setFormStatus] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleContactSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setFormStatus('Sending...');
+    if (!formData.name || !formData.email || !formData.message) {
+      setFormStatus('Please fill in all fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormStatus('Sending message...');
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formState),
+        body: JSON.stringify(formData),
       });
-
-      const result = await response.json();
 
       if (response.ok) {
         setFormStatus('Message sent successfully!');
-        setFormState({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', message: '' });
       } else if (response.status === 429) {
-        setFormStatus('You are sending messages too fast. Please wait a minute.');
+        const data = await response.json();
+        setFormStatus(data.error || 'You are sending messages too fast. Please wait.');
       } else {
-        setFormStatus(result.error || 'Failed to send message.');
+        const data = await response.json();
+        setFormStatus(data.error || 'Failed to send message.');
       }
     } catch (error) {
-      console.error('Contact form error:', error);
-      setFormStatus('An error occurred.');
+      setFormStatus('An error occurred while sending the message.');
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setFormStatus(''), 5000);
     }
   };
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormState(prevState => ({...prevState, [name]: value }));
-  };
+
+  const socialLinks = [
+    { icon: Mail, href: 'mailto:073damjan@gmail.com', label: '073damjan@gmail.com', color: 'text-rose-600 bg-rose-50 hover:bg-rose-100' },
+    { icon: Linkedin, href: 'https://linkedin.com/in/damjan-radusinović', label: 'damjan-radusinović', color: 'text-blue-600 bg-blue-50 hover:bg-blue-100' },
+    { icon: Github, href: 'https://github.com/damyandev', label: 'damyandev', color: 'text-slate-600 bg-slate-100 hover:bg-slate-200' }
+  ];
 
   return (
-    <section className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-      <h2 className="text-2xl font-semibold mb-4">Node.js/TS API Showcase</h2>
-      <p className="text-gray-600 mb-4">This form uses a rate-limited TypeScript API route.</p>
-      <form onSubmit={handleContactSubmit} className="space-y-4">
-        {/* Form inputs are the same as before */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-          <input type="text" id="name" name="name" value={formState.name} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+    <section id="contact" className="py-20 px-6 bg-gradient-to-br from-slate-50 to-indigo-50">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Let's Connect</h2>
+          <p className="text-slate-600 max-w-2xl mx-auto">
+            Ready to discuss your next project? I'm always interested in new opportunities and technical challenges.
+          </p>
         </div>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-          <input type="email" id="email" name="email" value={formState.email} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">Contact me directly</h3>
+            {socialLinks.map((link) => (
+              <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-4 p-4 rounded-xl border border-slate-200/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-md hover:border-slate-300 ${link.color}`}>
+                <link.icon size={20} />
+                <span className="font-medium">{link.label}</span>
+              </a>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">Or send me a message</h3>
+            <div>
+              <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 placeholder-slate-400" placeholder="Your Name" required/>
+            </div>
+            <div>
+              <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 placeholder-slate-400" placeholder="Your Email" required/>
+            </div>
+            <div>
+              <textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 resize-none placeholder-slate-400" rows={4} placeholder="Tell me about your project..." required/>
+            </div>
+            <button type="submit" disabled={isSubmitting} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-indigo-200 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <>
+                  <Send size={18} />
+                  <span>Send Message</span>
+                </>
+              )}
+            </button>
+            {formStatus && (
+              <div className={`text-center p-3 rounded-xl text-sm font-medium ${ formStatus.includes('successfully') ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-200' }`}>
+                {formStatus}
+              </div>
+            )}
+          </form>
         </div>
-        <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
-          <textarea id="message" name="message" rows={4} value={formState.message} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-        </div>
-        <div className="flex items-center justify-between">
-          <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Send Message
-          </button>
-          {formStatus && <p className="text-sm text-gray-600">{formStatus}</p>}
-        </div>
-      </form>
+      </div>
     </section>
   );
 }
