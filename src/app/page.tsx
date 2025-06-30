@@ -28,6 +28,7 @@ export default function HomePage() {
           <div className="lg:col-span-2 space-y-12">
             <section>
               <h2 className="text-3xl font-bold border-b-2 border-gray-200 pb-2 mb-4">Summary</h2>
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
               <p className="text-lg text-gray-700 leading-relaxed">
                   {'Self-taught Backend Developer with 4+ years of experience managing 1000+ client systems at enterprise scale. Expert in Python, API development, and microservices architecture. Proven track record of automation solutions reducing deployment times by 90%.'}
               </p>
