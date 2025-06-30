@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
 
   // Check if the user has exceeded the rate limit
-  const { success, limit, remaining } = await ratelimit.limit(ip);
+  const { success, limit: _limit, remaining: _remaining } = await ratelimit.limit(ip);
   
   if (!success) {
     return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
