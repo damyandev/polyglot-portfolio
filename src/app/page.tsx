@@ -1,113 +1,95 @@
-'use client';
-
-import { useState, useEffect, FormEvent } from 'react';
-
-interface Quote {
-  author: string;
-  text: string;
-}
+// src/app/page.tsx
+import { Download } from 'lucide-react';
+import QuoteComponent from '@/components/QuoteComponent'; // We will create this next
+import ContactFormComponent from '@/components/ContactFormComponent'; // We will create this too
 
 export default function HomePage() {
-  // State for the Python API
-  const [quote, setQuote] = useState<Quote | null>(null);
-
-  // State for the Node.js API (Contact Form)
-  const [formState, setFormState] = useState({ name: '', email: '', message: '' });
-  const [formStatus, setFormStatus] = useState('');
-
-  // Fetch the quote from the Python API when the component mounts
-  useEffect(() => {
-    async function fetchQuote() {
-      try {
-        // NOTE: In production, this will be your Vercel URL
-        const response = await fetch('/api/quote');
-        const data: Quote = await response.json();
-        setQuote(data);
-      } catch (error) {
-        console.error('Failed to fetch quote:', error);
-      }
-    }
-    fetchQuote();
-  }, []);
-
-  // Handle contact form submission
-  const handleContactSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setFormStatus('Sending...');
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formState),
-      });
-
-      if (response.ok) {
-        setFormStatus('Message sent successfully!');
-        setFormState({ name: '', email: '', message: '' }); // Clear form
-      } else {
-        const result = await response.json();
-        setFormStatus(result.error || 'Failed to send message.');
-      }
-    } catch (error) {
-      console.error('Contact form error:', error);
-      setFormStatus('An error occurred.');
-    }
-  };
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormState(prevState => ({...prevState, [name]: value }));
-  };
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50 text-gray-800">
-      <div className="w-full max-w-2xl space-y-12">
-        
-        <section className="text-center">
-          <h1 className="text-4xl font-bold">Damjan Radusinović</h1>
-          <p className="text-xl text-gray-600 mt-2">Backend Developer</p>
-        </section>
-        
-        {/* Python API Showcase */}
-        <section className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-2xl font-semibold mb-2">Python API Showcase</h2>
-          <p className="text-gray-600 mb-4">This quote is served by a Python serverless function:</p>
-          {quote ? (
-            <blockquote className="border-l-4 border-blue-500 pl-4 italic">
-              <p>"{quote.text}"</p>
-              <footer className="mt-2 text-right font-semibold">- {quote.author}</footer>
-            </blockquote>
-          ) : (
-            <p>Loading inspirational quote...</p>
-          )}
-        </section>
+    <main className="min-h-screen bg-gray-100 font-sans text-gray-800">
+      <div className="container mx-auto p-4 md:p-8 lg:p-12">
+        {/* --- HEADER --- */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+          <div>
+            <h1 className="text-5xl font-bold text-gray-900">DAMJAN RADUSINOVIĆ</h1>
+            <p className="text-2xl text-blue-600 font-light mt-1">Backend Developer</p>
+          </div>
+          <a
+            href="/resume.pdf"
+            download="Damjan_Radusinovic_Resume.pdf"
+            className="mt-4 md:mt-0 inline-flex items-center gap-2 py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <Download size={18} />
+            Download PDF
+          </a>
+        </header>
 
-        {/* Node.js API Showcase */}
-        <section className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-2xl font-semibold mb-4">Node.js/TS API Showcase</h2>
-          <p className="text-gray-600 mb-4">This contact form is powered by a TypeScript Next.js API route.</p>
-          <form onSubmit={handleContactSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-              <input type="text" id="name" name="name" value={formState.name} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-              <input type="email" id="email" name="email" value={formState.email} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
-            </div>
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
-              <textarea id="message" name="message" rows={4} value={formState.message} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-            </div>
-            <div className="flex items-center justify-between">
-              <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Send Message
-              </button>
-              {formStatus && <p className="text-sm text-gray-600">{formStatus}</p>}
-            </div>
-          </form>
-        </section>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* --- LEFT COLUMN --- */}
+          <div className="lg:col-span-2 space-y-12">
+            <section>
+              <h2 className="text-3xl font-bold border-b-2 border-gray-200 pb-2 mb-4">Summary</h2>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Self-taught Backend Developer with 4+ years of experience managing 1000+ client systems at enterprise scale. Expert in Python, API development, and microservices architecture. Proven track record of automation solutions reducing deployment times by 90%.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold border-b-2 border-gray-200 pb-2 mb-4">Experience</h2>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-semibold">WorldWide Multimedia</h3>
+                  <p className="text-lg text-gray-600">Backend Developer | January 2025 - Present</p>
+                  <ul className="mt-4 list-disc list-inside space-y-2 text-gray-700">
+                    <li>Reduced server deployment time by <strong>90%</strong> (45 to 2 min) via VM automation system with REST API.</li>
+                    <li>Streamlined Android box setup by <strong>85%</strong> (35 to 5 min) through automated SCB configuration.</li>
+                    <li>Architected HLS streaming functionality using Python and Liquidsoap.</li>
+                    <li>Modernized architecture with Docker microservices and containerization.</li>
+                    <li>Engineered full-stack Laravel applications for managing themes and subscriptions.</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold border-b-2 border-gray-200 pb-2 mb-4">Key Projects</h2>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold">Kubernetes Microservices Architecture</h3>
+                  <p className="text-gray-700">Rebuilt the company's infrastructure into a containerized system including a streaming engine, admin dashboard, and backend APIs. Used Docker, Kubernetes, and Traefik for scalable deployments.</p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">IoT Medication Tracking</h3>
+                  <p className="text-gray-700">Developed an NFC-based Android system integrated with Google Sheets and Tasker for real-time medication tracking and health analytics.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* --- RIGHT COLUMN --- */}
+          <aside className="lg:col-span-1 space-y-12">
+            <section>
+              <h2 className="text-2xl font-bold border-b-2 border-gray-200 pb-2 mb-4">Skills</h2>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg">Programming & Backend</h3>
+                  <p className="text-gray-600">Python, PHP, Node.js, TypeScript, RESTful API Design, Microservices, Laravel</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Databases</h3>
+                  <p className="text-gray-600">MySQL, PostgreSQL, Redis, Database Design, Query Optimization</p>
+                </div>
+                 <div>
+                  <h3 className="font-semibold text-lg">Infrastructure & Tools</h3>
+                  <p className="text-gray-600">Docker, Kubernetes, Linux, VM Management, Git, Vercel</p>
+                </div>
+              </div>
+            </section>
+            
+            {/* We will place the API components here */}
+            <QuoteComponent />
+            <ContactFormComponent />
+          </aside>
+        </div>
       </div>
     </main>
   );
