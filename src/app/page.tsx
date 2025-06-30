@@ -29,7 +29,7 @@ export default function HomePage() {
             <section>
               <h2 className="text-3xl font-bold border-b-2 border-gray-200 pb-2 mb-4">Summary</h2>
               <p className="text-lg text-gray-700 leading-relaxed">
-                {'Self-taught Backend Developer with 4+ years of experience managing 1000+ client systems at enterprise scale. Expert in Python, API development, and microservices architecture. Proven track record of automation solutions reducing deployment times by 90%.'}
+                  {'Self-taught Backend Developer with 4+ years of experience managing 1000+ client systems at enterprise scale. Expert in Python, API development, and microservices architecture. Proven track record of automation solutions reducing deployment times by 90%.'}
               </p>
             </section>
 
