@@ -1,4 +1,4 @@
-import { Download, Mail, Github, Linkedin, Code, Server, Database, Cpu, ChevronDown, ExternalLink, MapPin, Phone } from 'lucide-react';
+import { Download, Mail, Github, Linkedin, Code, Server, Database, Cpu, ChevronDown, MapPin, Phone } from 'lucide-react';
 import { QuoteComponent } from '@/components/QuoteComponent';
 import { ContactFormComponent } from '@/components/ContactFormComponent';
 import { Navigation } from '@/components/Navigation';
@@ -181,6 +181,7 @@ export default function ModernPortfolio() {
                     </div>
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
                       <span className="text-emerald-600 font-semibold text-sm">{project.impact}</span>
+                      {/* Note: The ExternalLink component was removed from here in the final design, causing the original linting error. */}
                     </div>
                   </div>
                 </div>

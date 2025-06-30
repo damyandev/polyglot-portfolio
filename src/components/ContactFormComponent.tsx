@@ -36,6 +36,7 @@ export function ContactFormComponent() {
         setFormStatus(data.error || 'Failed to send message.');
       }
     } catch (error) {
+      console.error('An error occurred during form submission:', error);
       setFormStatus('An error occurred while sending the message.');
     } finally {
       setIsSubmitting(false);
